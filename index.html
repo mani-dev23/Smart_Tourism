@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart Tourist — Kerala Dashboard</title>
+<style>
+:root{
+  --teal-900:#0b2233; --sand:#f2f6f7; --card:#ffffff; --ink:#122127; --muted:#7c8b90;
+  --accent:#1f8a6f; --coral:#ef4757; --line:#e7edee; --blue:#3b6cf0;
+  padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--sand);color:var(--ink);font-family:-apple-system,"Segoe UI",Roboto,sans-serif;}
+a,button{text-decoration:none;color:inherit;font-family:inherit;}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh;}
+.sidebar{background:var(--teal-900);color:#cfe3e6;padding:18px 12px;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 8px 18px;}
+.brand-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#1fb894,#0e6b56);display:flex;align-items:center;justify-content:center;font-size:17px;}
+.brand-name{font-weight:700;font-size:14.5px;color:#fff;}
+.brand-tag{font-size:10px;color:#6f9ba0;}
+.nav a{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:8px;font-size:13px;color:#b7d1d4;margin-bottom:2px;cursor:pointer;}
+.nav a.active{background:var(--accent);color:#fff;}
+.nav a:hover:not(.active){background:rgba(255,255,255,.07);}
+.nav .icon{width:18px;text-align:center;font-size:13.5px;}
+.badge-new{margin-left:auto;background:#1fb894;color:#03251d;font-size:9px;font-weight:700;padding:2px 5px;border-radius:5px;}
+.badge-sos-row{color:#ffb0b0;}
+main{padding:20px 26px 60px;overflow-x:hidden;position:relative;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px;}
+.greet{display:flex;align-items:center;gap:12px;}
+.avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#ffb677,#ff8a8a);}
+.greet h1{font-size:16.5px;margin:0;}
+.greet p{margin:2px 0 0;font-size:12.5px;color:var(--muted);}
+.top-actions{display:flex;align-items:center;gap:16px;font-size:12.5px;color:var(--muted);position:relative;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block;margin-right:5px;}
+.iconbtn{cursor:pointer;font-size:16px;position:relative;}
+.iconbtn .n{position:absolute;top:-6px;right:-8px;background:var(--coral);color:#fff;font-size:9px;border-radius:50%;padding:1px 5px;}
+.dropdown{position:absolute;top:28px;right:0;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);width:230px;padding:10px;font-size:12px;color:var(--ink);display:none;z-index:20;}
+.dropdown.show{display:block;}
+.dropdown .di{padding:7px 4px;border-bottom:1px solid var(--line);}
+.dropdown .di:last-child{border:none;}
+.grid-top{display:grid;grid-template-columns:2.1fr 1fr;gap:16px;margin-bottom:16px;}
+.hero{position:relative;border-radius:16px;overflow:hidden;min-height:210px;color:#fff;padding:26px;display:flex;flex-direction:column;justify-content:space-between;
+  background:
+    linear-gradient(100deg,rgba(5,20,26,.82) 10%,rgba(5,20,26,.15) 60%),
+    linear-gradient(200deg,#f3c98a 0%,#e8945a 30%,#3f7d78 55%,#0f4a53 85%);}
+.hero .vibes{position:absolute;top:20px;right:26px;font-family:Georgia,serif;font-style:italic;font-size:15px;text-align:right;line-height:1.3;opacity:.9;}
+.hero h2{font-size:32px;margin:0;letter-spacing:-.5px;}
+.hero p{margin:6px 0 18px;font-size:13px;letter-spacing:.3px;opacity:.9;}
+.hero .cta{background:#fff;color:var(--teal-900);border:none;padding:11px 18px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;width:fit-content;}
+.hero .cta:hover{background:#eef7f5;}
+.side-card{background:var(--card);border-radius:16px;padding:16px;border:1px solid var(--line);}
+.side-card h4{margin:0 0 2px;font-size:13.5px;}
+.side-card .sub{font-size:11.5px;color:var(--muted);margin-bottom:8px;}
+.weather{display:flex;justify-content:space-between;align-items:center;margin-top:6px;}
+.weather .temp{font-size:22px;font-weight:700;}
+.actions-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px;}
+.action{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 12px;text-align:left;cursor:pointer;transition:transform .12s;}
+.action:hover{transform:translateY(-2px);border-color:var(--accent);}
+.action .ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:9px;font-size:15px;}
+.action b{display:block;font-size:12.5px;}
+.action span{font-size:10.5px;color:var(--muted);}
+.services{border:2px solid var(--coral);border-radius:16px;padding:16px;margin-bottom:16px;background:var(--card);}
+.services-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:13.5px;font-weight:700;}
+.services-head a{font-size:12px;color:var(--accent);font-weight:600;cursor:pointer;}
+.services-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.svc{border-radius:12px;padding:14px;cursor:pointer;transition:transform .12s;}
+.svc:hover{transform:translateY(-2px);}
+.svc .ic{width:28px;height:28px;border-radius:8px;margin-bottom:9px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.svc b{display:block;font-size:12px;}
+.svc span{font-size:10px;color:var(--muted);}
+.grid-bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;}
+.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.panel h4{margin:0;font-size:13.5px;}
+.panel-head a{font-size:11.5px;color:var(--accent);cursor:pointer;font-weight:600;}
+.trip-thumb{height:76px;border-radius:10px;background:linear-gradient(120deg,#0f4a53,#e8945a);margin-bottom:10px;}
+.trip-row{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin:4px 0;}
+.list-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--line);font-size:12px;}
+.list-row:last-child{border:none;}
+.list-row .dotc{width:8px;height:8px;border-radius:50%;flex:none;}
+.call-btn{margin-left:auto;background:#e9f7f2;color:var(--accent);border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:11px;}
+.footer-safety{margin-top:16px;background:#e5f3ee;border-radius:14px;padding:14px 18px;font-size:12px;color:#0c4a3c;}
+.sos-fab{position:fixed;bottom:26px;right:26px;background:var(--coral);color:#fff;border:none;border-radius:50px;padding:14px 20px;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 10px 26px rgba(239,71,87,.4);z-index:30;}
+.overlay{position:fixed;inset:0;background:rgba(5,15,20,.55);display:none;align-items:center;justify-content:center;z-index:50;}
+.overlay.show{display:flex;}
+.modal{background:#fff;border-radius:16px;padding:26px;max-width:340px;text-align:center;}
+.modal h3{margin:0 0 8px;font-size:17px;}
+.modal p{font-size:13px;color:var(--muted);margin:0 0 18px;}
+.modal button{background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:9px;font-weight:600;cursor:pointer;font-size:13px;}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--teal-900);color:#fff;padding:11px 20px;border-radius:10px;font-size:12.5px;z-index:60;display:none;}
+.toast.show{display:block;}
+.page-title{font-size:20px;font-weight:700;margin:6px 0 16px;}
+@media(max-width:900px){
+  .app{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .grid-top{grid-template-columns:1fr;}
+  .actions-row{grid-template-columns:repeat(2,1fr);}
+  .services-grid{grid-template-columns:repeat(2,1fr);}
+  .grid-bottom{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">🌴</div>
+      <div><div class="brand-name">Smart Tourist</div><div class="brand-tag">Explore · Capture · Stay Safe</div></div>
+    </div>
+    <div class="nav" id="navList"></div>
+  </nav>
+
+  <main>
+    <div class="topbar">
+      <div class="greet">
+        <div class="avatar"></div>
+        <div><h1>Good Morning, Priya 👋</h1><p>Where would you like to go today?</p></div>
+      </div>
+      <div class="top-actions">
+        <span><span class="dot"></span>Device Connected</span>
+        <span>🔋 82%</span>
+        <span class="iconbtn" onclick="toggleDrop('notifDrop')">🔔<span class="n">3</span>
+          <div class="dropdown" id="notifDrop">
+            <div class="di"><b>Trip reminder</b><br>Your Alappuzha trip ends tomorrow</div>
+            <div class="di"><b>Weather alert</b><br>Light rain expected this evening</div>
+            <div class="di"><b>New place added</b><br>Krishnapuram Palace near you</div>
+          </div>
+        </span>
+        <span class="iconbtn" onclick="toggleDrop('settingsDrop')">⚙️
+          <div class="dropdown" id="settingsDrop">
+            <div class="di">Account settings</div>
+            <div class="di">Notification preferences</div>
+            <div class="di">Language: English</div>
+          </div>
+        </span>
+      </div>
+    </div>
+
+    <div id="pageBody"></div>
+  </main>
+</div>
+
+<button class="sos-fab" onclick="fireSOS()">🆘 SOS</button>
+<div class="overlay" id="sosOverlay">
+  <div class="modal">
+    <h3>Emergency SOS</h3>
+    <p>This will alert your emergency contacts and share your live location.</p>
+    <button onclick="confirmSOS()">Send Alert</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const navItems = [
+  {icon:'🏠',label:'Dashboard'},
+  {icon:'👤',label:'Profile'},
+  {icon:'🧭',label:'Trip Planner'},
+  {icon:'🔍',label:'Explore Nearby'},
+  {icon:'🛏',label:'Hotels'},
+  {icon:'🍽',label:'Restaurants'},
+  {icon:'🚌',label:'Travel Transport',badge:'NEW'},
+  {icon:'🖼',label:'Art Gallery'},
+  {icon:'📍',label:'Tourist Places'},
+  {icon:'🛰',label:'Live Location'},
+  {icon:'🆘',label:'Emergency SOS',sos:true},
+  {icon:'👥',label:'Emergency Contacts'},
+  {icon:'🕒',label:'Trip History'},
+  {icon:'🛡',label:'SOS History'}
+];
+let current = 'Dashboard';
+
+function renderNav(){
+  const el = document.getElementById('navList');
+  el.innerHTML = navItems.map(i=>
+    `<a class="${i.label===current?'active':''} ${i.sos?'badge-sos-row':''}" onclick="goTo('${i.label}')">
+      <span class="icon">${i.icon}</span>${i.label}${i.badge?`<span class="badge-new">${i.badge}</span>`:''}
+    </a>`).join('');
+}
+
+function goTo(label){
+  if(label==='Emergency SOS'){ fireSOS(); return; }
+  current = label;
+  renderNav();
+  renderPage();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleDrop(id){
+  document.querySelectorAll('.dropdown').forEach(d=>{ if(d.id!==id) d.classList.remove('show'); });
+  document.getElementById(id).classList.toggle('show');
+}
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.iconbtn')) document.querySelectorAll('.dropdown').forEach(d=>d.classList.remove('show'));
+});
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function fireSOS(){ document.getElementById('sosOverlay').classList.add('show'); }
+function confirmSOS(){
+  document.getElementById('sosOverlay').classList.remove('show');
+  showToast('🆘 SOS alert sent to your emergency contacts');
+}
+document.getElementById('sosOverlay').addEventListener('click', e=>{
+  if(e.target.id==='sosOverlay') e.target.classList.remove('show');
+});
+
+function dashboardHTML(){
+  return `
+  <div class="grid-top">
+    <div class="hero">
+      <div class="vibes">Good Vibes<br>Only 🤍</div>
+      <div>
+        <h2>Discover Kerala</h2>
+        <p>Backwaters · Beaches · Hills · Culture</p>
+      </div>
+      <button class="cta" onclick="goTo('Trip Planner')">🧭 Start New Trip →</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="side-card">
+        <h4>📍 Alappuzha, Kerala</h4>
+        <div class="sub">Backwaters & Beyond</div>
+        <div class="weather">
+          <div><div class="temp">28°C</div><div class="sub">Partly Cloudy</div></div>
+          <div style="text-align:right;"><b>23 Sep 2026</b><div class="sub">Wednesday</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions-row">
+    <div class="action" onclick="goTo('Trip Planner')"><div class="ic" style="background:#e8f0fe;color:#3b6cf0;">🧳</div><b>Start Trip</b><span>Plan your journey</span></div>
+    <div class="action" onclick="goTo('Explore Nearby')"><div class="ic" style="background:#e6f7f1;color:#1fb894;">🧭</div><b>Explore Nearby</b><span>Find places around you</span></div>
+    <div class="action" onclick="goTo('Live Location')"><div class="ic" style="background:#f1eafd;color:#8b5cf6;">📍</div><b>Live Location</b><span>Track your location</span></div>
+    <div class="action" onclick="fireSOS()"><div class="ic" style="background:#fde9eb;color:var(--coral);">🆘</div><b>Emergency SOS</b><span>Help when you need it</span></div>
+    <div class="action" onclick="goTo('Travel Transport')"><div class="ic" style="background:#e6f4fd;color:#0ea5e9;">🚐</div><b>Travel Transport</b><span>Bus · Train · Taxi · Auto</span></div>
+  </div>
+
+  <div class="services">
+    <div class="services-head"><span>🛡 Quick Services</span><a onclick="showToast('Opening all quick services')">Access travel essentials quickly →</a></div>
+    <div class="services-grid">
+      <div class="svc" style="background:#fdecee;" onclick="goTo('Hotels')"><div class="ic" style="background:var(--coral);color:#fff;">🛏</div><b>Hotels</b><span>Book your stay</span></div>
+      <div class="svc" style="background:#fdf3e4;" onclick="goTo('Restaurants')"><div class="ic" style="background:#e8945a;color:#fff;">🍽</div><b>Restaurants</b><span>Find great food</span></div>
+      <div class="svc" style="background:#e8f0fe;" onclick="goTo('Travel Transport')"><div class="ic" style="background:#3b6cf0;color:#fff;">🚕</div><b>Transportation</b><span>Cab / Auto / Bus</span></div>
+      <div class="svc" style="background:#e6f7f1;" onclick="showToast('Opening Shops')"><div class="ic" style="background:#1fb894;color:#fff;">🛍</div><b>Shops</b><span>Buy & explore</span></div>
+      <div class="svc" style="background:#f1eafd;" onclick="goTo('Art Gallery')"><div class="ic" style="background:#8b5cf6;color:#fff;">🖼</div><b>Art Gallery</b><span>Your travel memories</span></div>
+      <div class="svc" style="background:#e6f4fd;" onclick="goTo('Tourist Places')"><div class="ic" style="background:#0ea5e9;color:#fff;">📍</div><b>Tourist Places</b><span>Explore attractions</span></div>
+      <div class="svc" style="background:#fdeaf4;" onclick="showToast('Opening Travel Packages')"><div class="ic" style="background:#f472b6;color:#fff;">🎁</div><b>Travel Packages</b><span>Pre-planned trips</span></div>
+      <div class="svc" style="background:#eaf3fd;" onclick="showToast('28°C, Partly Cloudy in Alappuzha')"><div class="ic" style="background:#60a5fa;color:#fff;">⛅</div><b>Weather</b><span>Check weather</span></div>
+    </div>
+  </div>
+
+  <div class="grid-bottom">
+    <div class="panel">
+      <div class="panel-head"><h4>Your Trip Summary</h4></div>
+      <div class="trip-thumb"></div>
+      <b style="font-size:12.5px;">Alappuzha Trip</b>
+      <div class="trip-row"><span>📅 20–25 Sep 2026</span></div>
+      <div class="trip-row"><span>📍 3 Places Visited</span></div>
+      <div class="trip-row"><span>📷 42 Photos</span><span>1 Day Left</span></div>
+      <button style="width:100%;margin-top:8px;background:var(--sand);border:1px solid var(--line);padding:8px;border-radius:9px;font-size:12px;cursor:pointer;" onclick="goTo('Trip History')">View Details →</button>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h4>Nearby Places</h4><a onclick="goTo('Explore Nearby')">View All →</a></div>
+      <div class="list-row"><span class="dotc" style="background:#1fb894;"></span>Alappuzha Beach <span style="margin-left:auto;color:var(--muted);">2.1 km</span></div>
+      <div class="list-row"><span class="dotc" style="background:#3b6cf0;"></span>Alleppey Boat House <span style="margin-left:auto;color:var(--muted);">3.4 km</span></div>
+      <div class="list-row"><span class="dotc" style="background:#e8945a;"></span>Marari Beach <span style="margin-left:auto;color:var(--muted);">8.7 km</span></div>
+      <div class="list-row"><span class="dotc" style="background:var(--coral);"></span>Krishnapuram Palace <span style="margin-left:auto;color:var(--muted);">12.5 km</span></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h4>Emergency Contacts</h4><a onclick="goTo('Emergency Contacts')">View All →</a></div>
+      <div class="list-row"><span class="dotc" style="background:#8b5cf6;"></span>Mom <button class="call-btn" onclick="showToast('Calling +91 98765 43210')">📞</button></div>
+      <div class="list-row"><span class="dotc" style="background:#3b6cf0;"></span>Dad <button class="call-btn" onclick="showToast('Calling +91 98765 43211')">📞</button></div>
+      <div class="list-row"><span class="dotc" style="background:var(--coral);"></span>Friend (Riya) <button class="call-btn" onclick="showToast('Calling +91 98765 43212')">📞</button></div>
+    </div>
+  </div>
+
+  <div class="footer-safety">🛡 <b>Your safety is our priority</b> — In case of emergency, press the SOS button or contact your emergency contacts.</div>
+  `;
+}
+
+function genericPage(label){
+  const icons = {'Profile':'👤','Trip Planner':'🧭','Explore Nearby':'🔍','Hotels':'🛏','Restaurants':'🍽','Travel Transport':'🚌','Art Gallery':'🖼','Tourist Places':'📍','Live Location':'🛰','Emergency Contacts':'👥','Trip History':'🕒','SOS History':'🛡'};
+  return `<div class="page-title">${icons[label]||''} ${label}</div>
+  <div class="panel" style="max-width:520px;">
+    <p style="color:var(--muted);font-size:13.5px;line-height:1.6;margin:0 0 14px;">This is the ${label} section. In the full app this would show your ${label.toLowerCase()} details.</p>
+    <button style="background:var(--accent);color:#fff;border:none;padding:10px 16px;border-radius:9px;font-weight:600;cursor:pointer;font-size:13px;" onclick="goTo('Dashboard')">← Back to Dashboard</button>
+  </div>`;
+}
+
+function renderPage(){
+  document.getElementById('pageBody').innerHTML = current==='Dashboard' ? dashboardHTML() : genericPage(current);
+}
+
+renderNav();
+renderPage();
+</script>
+</body>
+</html>
